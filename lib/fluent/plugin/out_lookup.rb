@@ -1,11 +1,14 @@
 # coding: utf-8
 require "csv"
+require 'fluent/plugin/output'
 
-module Fluent
+module Fluent::Plugin
   class LookupOutput < Output
     include Fluent::HandleTagNameMixin
 
     Fluent::Plugin.register_output('lookup', self)
+
+    helpers :event_emitter
 
     config_param :table_file, :string, :default => nil
     config_param :field, :string, :default => nil
@@ -40,7 +43,7 @@ module Fluent
       end
 
       if (strict && lookup_table.length == 0)
-        raise ConfigError, "Lookup file is empty"
+        raise Fluent::ConfigError, "Lookup file is empty"
       end
 
       return lookup_table
@@ -59,8 +62,8 @@ module Fluent
       @return_method = method(:return)
       @rename_method = method(:rename)
 
-      if (field.nil? || table_file.nil?) 
-        raise ConfigError, "lookup: Both 'field', and 'table_file' are required to be set."
+      if (field.nil? || table_file.nil?)
+        raise Fluent::ConfigError, "lookup: Both 'field', and 'table_file' are required to be set."
       end
 
       @lookup_table = create_lookup_table(table_file)
@@ -81,14 +84,12 @@ module Fluent
 
     end
 
-    def emit(tag, es, chain)
+    def process(tag, es)
       es.each { |time, record|
         t = tag.dup
         filter_record(t, time, record)
-        Engine.emit(t, time, record)
+        router.emit(t, time, record)
       }
-
-      chain.next
     end
 
     private
@@ -98,20 +99,20 @@ module Fluent
     end
 
     def assign(record, key, value)
-      record[key] = process(value) || value
+      record[key] = lookup(value) || value
     end
 
-    def return(record, key, value_nouse) 
+    def return(record, key, value_nouse)
       return record[key]
     end
 
     def rename(record, key, value_nouse)
-      new_key = process(key) || return
+      new_key = lookup(key) || return
       field_value = record[key]
       record.delete(key)
       record[new_key] = field_value
     end
-    
+
 
     def filter_record(tag, time, record)
       super(tag, time, record)
@@ -136,13 +137,13 @@ module Fluent
       value = dig_cb(record, @field, nil, false, @rename_method)
     end
 
-    # Generic function to dig into map. 
+    # Generic function to dig into map.
     def dig_cb(record, path, value, alter, cb)
       digged_record = record
       path.each_with_index {|key, index|
         # If enabled, creates new path in the record
         if (!digged_record.has_key?(key))
-          if (!alter) 
+          if (!alter)
             return nil
           end
           digged_record[key] = {}
@@ -157,18 +158,18 @@ module Fluent
       return nil
     end
 
-    def process(value)
+    def lookup(value)
       return @lookup_table[value]
     end
 
 
     def handle_row_error(row, e)
-      raise ConfigError, "Error at row #{row} : #{e}"
+      raise Fluent::ConfigError, "Error at row #{row} : #{e}"
     end
 
 
     def handle_file_err(file, e)
-      raise ConfigError, "Unable to open file '#{file}' : #{e.message}"
+      raise Fluent::ConfigError, "Unable to open file '#{file}' : #{e.message}"
     end
 
   end

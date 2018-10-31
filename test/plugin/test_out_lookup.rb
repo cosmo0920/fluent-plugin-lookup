@@ -13,9 +13,9 @@ class LookupOutputTest < Test::Unit::TestCase
     @empty_file = "#{dir}/empty.csv"
   end
 
-  def create_driver(conf, tag = 'test')
-    Fluent::Test::OutputTestDriver.new(
-      Fluent::LookupOutput, tag
+  def create_driver(conf)
+    Fluent::Test::Driver::Output.new(
+      Fluent::Plugin::LookupOutput
     ).configure(conf)
   end
 
@@ -298,8 +298,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'foo' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -319,8 +319,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'foo' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -339,8 +339,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'foo' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -363,8 +363,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'foo' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -387,8 +387,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'foo' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -408,8 +408,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'foo' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -438,8 +438,8 @@ class LookupOutputTest < Test::Unit::TestCase
       }
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -462,8 +462,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'foo' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -482,8 +482,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'foo' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -502,8 +502,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'nicolas' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -524,8 +524,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'cage' => "foo"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -547,8 +547,8 @@ class LookupOutputTest < Test::Unit::TestCase
       }
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
@@ -568,8 +568,8 @@ class LookupOutputTest < Test::Unit::TestCase
       'nicolas' => "bar"
     }
 
-    d.run { d.emit(record) }
-    emits = d.emits
+    d.run(default_tag: 'test') { d.feed(record) }
+    emits = d.events
 
     assert_equal 1,           emits.count
     assert_equal 'lookup.test', emits[0][0]
